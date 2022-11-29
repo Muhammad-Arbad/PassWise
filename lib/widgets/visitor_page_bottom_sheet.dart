@@ -28,12 +28,18 @@ class CustomBottomSheet extends StatelessWidget {
                   BorderRadius.all(Radius.circular(15)),
                   boxShadow: kElevationToShadow[4],
                   color: CustomColors().customGreenColor,
+                  // image: DecorationImage(
+                  //     image: AssetImage('assets/Ultralight-S.png')),
                 ),
                 child: IconButton(icon: Icon(Icons.home,size: 30,color: Colors.white,),
-                onPressed: ()async{
-                  //await get.getAllPasses();
-                },
-                )),
+                onPressed: (){},
+                ),
+              // child: ImageIcon(
+              //   AssetImage("assets/Ultralight-S.png"),
+              //   color: Colors.white,
+              //   size: 50,
+              // ),
+                ),
             Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -42,12 +48,18 @@ class CustomBottomSheet extends StatelessWidget {
                   boxShadow: kElevationToShadow[4],
                   color: CustomColors().customGreenColor,
                 ),
-                child: IconButton(icon:Icon(Icons.add_circle_outline,size: 30,color: Colors.white,),
-                    onPressed: ()async{
-                      await get.requestLogin('usman@gmail.com', '12345678');
-                    }),
-            ),
+                child:
+                //Image.asset("assets/Group 429.png")
+                // ImageIcon(
+                //   AssetImage("assets/Group 431.png"),
+                //   //color: Colors.white,
+                //   size: 50,)
 
+                IconButton(icon:Icon(Icons.add_circle_outline,size: 30,color: Colors.white,),
+                    onPressed: (){}
+            )
+
+            ),
           ],
         ),
       ),

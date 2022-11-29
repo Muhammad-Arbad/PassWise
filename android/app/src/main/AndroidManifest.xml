@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.passwise_app_rehan_sb">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="passwise_app_rehan_sb"
+        android:label="Pass Wise"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

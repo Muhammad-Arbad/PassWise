@@ -33,6 +33,7 @@ class _TextFormFieldCustomerBuiltState extends State<TextFormFieldCustomerBuilt>
             obscureText: widget.obscText??false,
             validator:widget.isOptional!=true? (value){
               if(value!.isEmpty){
+                //return null;
                 return widget.hintTxt!+" should not be null";
               }
               else
@@ -79,21 +80,21 @@ class _TextFormFieldCustomerBuiltState extends State<TextFormFieldCustomerBuilt>
               ),
 
 
-              // errorBorder: OutlineInputBorder(
-              //   borderRadius: BorderRadius.all(Radius.circular(10)),
-              //   borderSide: BorderSide(
-              //     color: Colors.red,
-              //     width: 2.0,
-              //   ),
-              // ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderSide: BorderSide(
+                  color: Colors.red,
+                  width: 2.0,
+                ),
+              ),
               //
-              // focusedErrorBorder: OutlineInputBorder(
-              //   borderRadius: BorderRadius.all(Radius.circular(10)),
-              //   borderSide: BorderSide(
-              //     color: Colors.red,
-              //     width: 2.0,
-              //   ),
-              // ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderSide: BorderSide(
+                  color: CustomColors().customGreenColor,
+                  width: 2.0,
+                ),
+              ),
 
               hintText: widget.hintTxt,
               prefixIcon: Container(

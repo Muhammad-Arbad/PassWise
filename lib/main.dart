@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
-import 'package:passwise_app_rehan_sb/views/home_page.dart';
-import 'package:passwise_app_rehan_sb/views/visitor_list.dart';
+import 'package:passwise_app_rehan_sb/views/splash.dart';
+
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
     //systemNavigationBarColor: Colors.blue, // navigation bar color
-    //     statusBarColor: Colors.transparent,
+         statusBarColor: Colors.transparent,
          statusBarIconBrightness: Brightness.dark,
     //     statusBarBrightness: Brightness.light,// status bar color
   ));
@@ -20,10 +19,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       //home: VisitorList(),
-      home: HomePage(),
+      //home: HomePage(),
+      home: SplashScreen(),
     );
   }
 }

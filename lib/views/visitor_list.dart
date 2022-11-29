@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
 import 'package:passwise_app_rehan_sb/models/visitor_details.dart';
 import 'package:passwise_app_rehan_sb/services/http_request.dart';
 import 'package:passwise_app_rehan_sb/widgets/visitor_page_bottom_sheet.dart';
+import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 
 class VisitorList extends StatefulWidget {
   String token;
@@ -15,15 +17,18 @@ class VisitorList extends StatefulWidget {
 }
 
 class _VisitorListState extends State<VisitorList> {
+  int selectedIndex = 0;
   bool isLoading = false;
   HttpRequest getPassesHttp = HttpRequest();
+  DateTime selectedDate = DateTime.now();
+  int selectedDateFromCalendar = DateTime.now().day;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    getAllPasses();
+    print("Date");
+    //getAllPasses();
   }
 
   @override
@@ -66,46 +71,72 @@ class _VisitorListState extends State<VisitorList> {
             ],
           ),
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(10),
-            child: Divider(
-              color: CustomColors().customGreenColor,
-              thickness: 3,
-              indent: 170,
-              endIndent: 170,
+            preferredSize: const Size.fromHeight(0),
+            child: Container(
+              height: 2.0,
+              width: 50.0,
+              color:CustomColors().customGreenColor
             ),
           ),
         ),
-        body: isLoading
-            ? Container(
-          //padding: EdgeInsets.fromLTRB(10, 10, 20, 100),
-          //padding: EdgeInsets.fromLTRB(10, 10, 10, 100),
+        body:
+            // isLoading
+            //     ?
+            Container(
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 100),
+          child: Column(
+            children: [
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+              //   child: CalendarAppBar(),
+              // ),
+              Container(
+                //height: 400,
+                padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                child: horizontalCalendar()
+
+              ),
+              Expanded(
                 child: FutureBuilder<List>(
                   future: getPassesHttp.getAllPasses(widget.token),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return ListView.builder(
-                          // separatorBuilder: (context, index) => Divider(
-                          //       color: Colors.red,
-                          //     ),
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
-                            return singleVisitorTile(
-                                VisitorsDetail.fromJson(snapshot.data![index]));
+                            // if(index==0){
+                            //   setState((){
+                            //     selectedDate = stringToDateTime(snapshot.data![index]["date"]);
+                            //   });
+                            // }
+                            return displayOnlyDate(snapshot.data![index]["date"])==selectedDateFromCalendar.toString() ?
+                            singleVisitorTile(VisitorsDetail.fromJson(snapshot.data![index]), index):
+                                index==1?
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
+                                    child: Center(child: Text("No record for Date "+selectedDateFromCalendar.toString(),style: TextStyle(fontSize: 20,color: CustomColors().customGreenColor),)),
+                                  ):
+                            Container();
                           });
                     } else {
                       return Center(child: CircularProgressIndicator());
                     }
                   },
                 ),
-                color: CustomColors().customWhiteColor,
-              )
-            : Center(child: CircularProgressIndicator()),
+              ),
+            ],
+          ),
+          color: CustomColors().customWhiteColor,
+        )
+        //        : Center(child: CircularProgressIndicator())
+        ,
         bottomSheet: CustomBottomSheet(),
       ),
     );
   }
 
   void getAllPasses() async {
+    print(DateTime.now());
     setState(() {
       isLoading = true;
     });
@@ -114,34 +145,67 @@ class _VisitorListState extends State<VisitorList> {
     print(data[0]);
   }
 
-  Widget singleVisitorTile(VisitorsDetail visitorsDetail) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-      child: Row(
-        children: [
-          Expanded(
+  Widget singleVisitorTile(VisitorsDetail visitorsDetail, int index) {
+    return GestureDetector(
+      onTap: () => setState(
+        () {
+          selectedIndex = index;
+        },
+      ),
+      child: Container(
+        padding: EdgeInsets.fromLTRB(20, 5, 20, 3),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
               flex: 1,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Column(
                     children: [
-                      Text("07",style: TextStyle(color: CustomColors().customTextGrey,fontSize: 10,fontWeight: FontWeight.bold)),
-                      Text("PM",style: TextStyle(color: CustomColors().customTextGrey,fontSize: 10,fontWeight: FontWeight.bold)),
+                      Text(displayOnlyHours(visitorsDetail.date),
+                          style: TextStyle(
+                              color: CustomColors().customTextGrey,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold)),
+                      Text("PM",
+                          style: TextStyle(
+                              color: CustomColors().customTextGrey,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  SizedBox(width: 5,),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Column(
                     children: [
-                      Container(
-                          child: CustomPaint(
+                      selectedIndex == index
+                          ? Container(
+                        // padding: EdgeInsets.all(7),
+                        // decoration: BoxDecoration(
+                        //   borderRadius: BorderRadius.all(Radius.circular(10)),
+                        //   border: Border.all(
+                        //     width: 1,
+                        //     color: Colors.green,
+                        //     style: BorderStyle.solid,
+                        //   ),
+                        // ),
+                              child: CustomPaint(
+                                size: Size(13, 13),
+                                painter: CirclePainterFilled(),
+                              ),
+                            )
+                          : CustomPaint(
                             size: Size(13, 13),
                             painter: CirclePainter(),
-                          )
+                          ),
+                      SizedBox(
+                        height: 10,
                       ),
-                      SizedBox(height: 10,),
                       Container(
-                        height: 60,
+                        height: 55,
                         child: VerticalDivider(
                           color: Colors.black,
                           thickness: 1,
@@ -150,59 +214,209 @@ class _VisitorListState extends State<VisitorList> {
                     ],
                   )
                 ],
-              )),
-          Expanded(
-              flex: 5,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: CustomColors().customTileColor,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  boxShadow: kElevationToShadow[4],
-                ),
-                padding: EdgeInsets.all(5),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(flex:1,child: Icon(Icons.calendar_month_outlined,color: CustomColors().customWhiteColor,)),
-                    Expanded(flex:10,child:
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Project meeting",style: TextStyle(fontWeight: FontWeight.bold),),
-                            Text("07:20",style: TextStyle(color: CustomColors().customTextGrey,fontWeight: FontWeight.bold),),
-                          ],
-                        ),
-                        SizedBox(height: 5,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(visitorsDetail.name??"",style: TextStyle(color: CustomColors().customTextGrey),),
-                            Text(visitorsDetail.phoneNo??"",style: TextStyle(color: CustomColors().customTextGrey)),
-                          ],
-                        ),
-                        SizedBox(height: 5,),
-                        Text("Creative inter tech",style: TextStyle(color: CustomColors().customTextGrey),),
-                      ],
-                    )
-                    ),
-                  ],
-                ),
-              )),
-        ],
+              ),
+            ),
+            Expanded(
+                flex: 5,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: selectedIndex == index
+                        ? CustomColors().customGreenColor
+                        : CustomColors().customTileColor,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    boxShadow: kElevationToShadow[4],
+                  ),
+                  //padding: EdgeInsets.all(5),
+                  padding: EdgeInsets.fromLTRB(5, 5, 30, 5),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                          flex: 1,
+                          child: Icon(
+                            Icons.calendar_month_outlined,
+                            color: CustomColors().customWhiteColor,
+                          )),
+                      Expanded(
+                          flex: 10,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Project meeting",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color: selectedIndex == index
+                                          ? Colors.white
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    displayHourAndMinutes(visitorsDetail.date),
+                                    style: TextStyle(
+                                      color: selectedIndex == index
+                                          ? Colors.white
+                                          : CustomColors().customTextGrey,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(visitorsDetail.name ?? "",
+                                      style: TextStyle(
+                                        //color: CustomColors().customTextGrey,
+                                        fontSize: 12,
+                                        color: selectedIndex == index
+                                            ? Colors.white
+                                            : CustomColors().customTextGrey,
+                                      )),
+                                  Text(visitorsDetail.phoneNo ?? "",
+                                      style: TextStyle(
+                                          //color: CustomColors().customTextGrey,
+                                          color: selectedIndex == index
+                                              ? Colors.white
+                                              : CustomColors().customTextGrey,
+                                          fontSize: 12)),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                "Creative inter tech",
+                                style: TextStyle(
+                                    color: selectedIndex == index
+                                        ? Colors.white
+                                        : CustomColors().customTextGrey,
+                                    //color: CustomColors().customTextGrey,
+                                    fontSize: 12),
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
+                )),
+          ],
+        ),
       ),
     );
   }
-}
 
+  String displayHourAndMinutes(String? date) {
+    DateTime parseDate =  DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    var inputDate = DateTime.parse(parseDate.toString());
+    var outputDate = DateFormat.Hm().format(inputDate);
+    return outputDate;
+  }
+
+  String displayOnlyHours(String? date) {
+    DateTime parseDate =  DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    var inputDate = DateTime.parse(parseDate.toString());
+    var outputDate = DateFormat.H().format(inputDate);
+    return outputDate;
+  }
+
+  String displayOnlyDate(String? date) {
+    DateTime parseDate =  DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    var inputDate = DateTime.parse(parseDate.toString());
+    //var outputDate = DateFormat.H().format(inputDate);
+    var outputDate = DateFormat.d().format(inputDate);
+    print(outputDate);
+    return outputDate;
+  }
+
+  DateTime stringToDateTime(String? date) {
+    DateTime parseDate =  DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    return parseDate;
+  }
+
+  horizontalCalendar() {
+    return SingleChildScrollView(
+        child: TableCalendar(
+              calendarBuilders: CalendarBuilders(
+
+                  markerBuilder: ((context, day, events) {
+                    if(day.day == selectedDate.day) {
+                      return Container(
+                          height: 2.0,
+                          width: 23.0,
+                          color: CustomColors().customGreenColor
+                      );
+                    }
+                  }),
+
+                  defaultBuilder: (context,dateTime,datetime){
+                    if(dateTime.day == selectedDate.day){
+                      return Center(
+                        child: Text(
+                          dateTime.day.toString(),
+                          style: TextStyle(color: CustomColors().customGreenColor),
+                        ),
+                      );
+                    }
+                  },
+
+                  dowBuilder: (context, day) {
+                    if (day.day == selectedDate.day) {
+                      final text = DateFormat('EEE').format(day);
+                      //final text = DateFormat.E('EEE').format(day);
+                      return Center(
+                        child: Text(
+                          text,
+                          style: TextStyle(color: CustomColors().customGreenColor),
+                        ),
+                      );
+                    }
+                  },
+
+                  // selectedBuilder: (context,day,focusDay){
+                  //   if(day.day == selectedDate.day)
+                  //     return Container(child: Text("Ar"));
+                  // }
+
+              ),
+              calendarStyle: CalendarStyle(),
+              headerVisible: false,
+              calendarFormat: CalendarFormat.week,
+              firstDay: DateTime.utc(2010, 1, 1),
+              lastDay: DateTime.utc(2030, 1, 1),
+              //focusedDay: DateTime.now(),
+              focusedDay: selectedDate,
+
+
+          startingDayOfWeek: StartingDayOfWeek.monday,
+
+              onDaySelected: (date, events) {
+                setState(() {
+                  selectedDate = date;
+                  selectedDateFromCalendar = date.day;
+                });
+                print(selectedDateFromCalendar);
+
+              },
+            ),
+    );
+  }
+
+}
 
 class CirclePainter extends CustomPainter {
   final _paint = Paint()
     ..color = CustomColors().customGreenColor
     ..strokeWidth = 2
-  // Use [PaintingStyle.fill] if you want the circle to be filled.
     ..style = PaintingStyle.stroke;
 
   @override
@@ -212,8 +426,25 @@ class CirclePainter extends CustomPainter {
       _paint,
     );
   }
+
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
+class CirclePainterFilled extends CustomPainter {
+  final _paint = Paint()
+    ..color = CustomColors().customGreenColor
+    //..strokeWidth = 1
+    ..style = PaintingStyle.fill;
 
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawOval(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      _paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}

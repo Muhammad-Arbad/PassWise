@@ -41,21 +41,31 @@ class _CustomAppBarHomePageState extends State<CustomAppBarHomePage> {
                   ),
                 ),
                 Container(
-                  height: 80,
-                  width: 80,
+                  height: 85,
+                  width: 85,
                   decoration: BoxDecoration(
                     image: const DecorationImage(
                         image: AssetImage('assets/logo/passwise_logo.jpg')),
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                const TabBar(tabs: [
+                const TabBar(
+                    //indicatorColor: Colors.white,
+                    indicator: UnderlineTabIndicator(
+                        borderSide: BorderSide(width: 2.0,color: Colors.white),
+                        insets: EdgeInsets.symmetric(horizontal:80.0)
+                    ),
+                    tabs: [
                   Tab(
-                    text: 'Sign up',
+                    child: Text(
+                      "Sign up",
+                      style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  Tab(
-                    text: 'Sign in',
-                  ),
+                  Tab(child: Text(
+                    "Sign in",
+                    style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),
+                  ),),
                 ])
               ],
             ),
