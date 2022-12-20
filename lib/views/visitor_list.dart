@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
-import 'package:passwise_app_rehan_sb/models/visitor_details.dart';
+import 'package:passwise_app_rehan_sb/models/visitor_details_Model.dart';
 import 'package:passwise_app_rehan_sb/services/http_request.dart';
-import 'package:passwise_app_rehan_sb/widgets/visitor_page_bottom_sheet.dart';
+import 'package:passwise_app_rehan_sb/views/add_visitor.dart';
+import 'package:passwise_app_rehan_sb/widgets/bustom_bottom_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -110,7 +111,7 @@ class _VisitorListState extends State<VisitorList> {
                             //   });
                             // }
                             return displayOnlyDate(snapshot.data![index]["date"])==selectedDateFromCalendar.toString() ?
-                            singleVisitorTile(VisitorsDetail.fromJson(snapshot.data![index]), index):
+                            singleVisitorTile(VisitorsDetailModel.fromJson(snapshot.data![index]), index):
                                 index==1?
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
@@ -130,7 +131,7 @@ class _VisitorListState extends State<VisitorList> {
         )
         //        : Center(child: CircularProgressIndicator())
         ,
-        bottomSheet: CustomBottomSheet(),
+        bottomSheet: CustomBottomSheet(addVisitor: addVisitor),
       ),
     );
   }
@@ -145,7 +146,7 @@ class _VisitorListState extends State<VisitorList> {
     print(data[0]);
   }
 
-  Widget singleVisitorTile(VisitorsDetail visitorsDetail, int index) {
+  Widget singleVisitorTile(VisitorsDetailModel visitorsDetail, int index) {
     return GestureDetector(
       onTap: () => setState(
         () {
@@ -411,6 +412,11 @@ class _VisitorListState extends State<VisitorList> {
     );
   }
 
+
+  addVisitor() {
+    print("Add Visitor");
+    Navigator.push(context,MaterialPageRoute(builder: (context)=>AddVisitor()));
+  }
 }
 
 class CirclePainter extends CustomPainter {

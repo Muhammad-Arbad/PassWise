@@ -17,9 +17,7 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   TextEditingController emailControllar = TextEditingController();
-
   TextEditingController passwordControllar = TextEditingController();
-
   HttpRequest loginRequestObject = HttpRequest();
   bool isLaoding = false;
   final formKey = GlobalKey<FormState>();
@@ -30,23 +28,18 @@ class _SignInState extends State<SignIn> {
       child: Form(
         key: formKey,
         child: Container(
-          padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+          padding: EdgeInsets.fromLTRB(50, 20, 50, 20),
           child: Column(
             children: [
               Text(
                 "Sign in",
                 style: TextStyle(
                     color: CustomColors().customGreenColor,
-                    fontSize: 30),
+                    fontSize: 23,fontWeight: FontWeight.bold),
               ),
               SizedBox(
                 height: 20,
               ),
-              // TextFormFieldCustomerBuilt(
-              //   textInputType: TextInputType.phone,
-              //   hintTxt: "Phone no",
-              //   icoon: Icons.phone,
-              // ),
               TextFormFieldCustomerBuilt(
                 textInputType: TextInputType.emailAddress,
                 hintTxt: "Email",
@@ -54,17 +47,11 @@ class _SignInState extends State<SignIn> {
                 icoon: Icons.email,
                 controller: emailControllar,
               ),
-              SizedBox(
-                height: 20,
-              ),
               TextFormFieldCustomerBuilt(
                 obscText: true,
                 hintTxt: "Password",
                 icoon: Icons.key,
                 controller: passwordControllar,
-              ),
-              SizedBox(
-                height: 20,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -89,8 +76,7 @@ class _SignInState extends State<SignIn> {
         ),
       ),
     ):
-    Center(child: CircularProgressIndicator())
-    ;
+    Center(child: CircularProgressIndicator(color: CustomColors().customGreenColor,));
   }
 
   void signInfunction() async {
@@ -103,38 +89,17 @@ class _SignInState extends State<SignIn> {
       print(jsonDecode(data));
       if(data!='null'){
         print("Login Successful");
-        // Fluttertoast.showToast(
-        //     msg: "Login Successful",
-        //     toastLength: Toast.LENGTH_SHORT,
-        //     gravity: ToastGravity.CENTER,
-        //     backgroundColor: Colors.green,
-        //     textColor: Colors.white,
-        //     fontSize: 16.0);
         Navigator.push(context, MaterialPageRoute(builder: (context)=>VisitorList(token: jsonDecode(data)["token"],)));
         setState(() {
           isLaoding = false;
         });
       }
-      // else if(data=='invalid'){
-      //   print("Invalid user name or password");
-      //   setState(() {
-      //     isLaoding = false;
-      //   });
-      //   //showToast();
-      // }
       else{
         print("else part");
         setState(() {
           isLaoding = false;
         });
         showToast();
-        // Fluttertoast.showToast(
-        //     msg: "invalid Email or Password",
-        //     toastLength: Toast.LENGTH_SHORT,
-        //     gravity: ToastGravity.CENTER,
-        //     backgroundColor: Colors.red,
-        //     textColor: Colors.white,
-        //     fontSize: 16.0);
       }
     }
 

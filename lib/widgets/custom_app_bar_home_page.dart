@@ -17,7 +17,7 @@ class _CustomAppBarHomePageState extends State<CustomAppBarHomePage> {
   @override
   Widget build(BuildContext context) => Container(
         color: CustomColors().customWhiteColor,
-        height: 400,
+        height: widget.heightOfAppBar,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
           child: Container(
@@ -32,7 +32,7 @@ class _CustomAppBarHomePageState extends State<CustomAppBarHomePage> {
                   elevation: 0.0,
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text("PASS "),
                       Text("WISE",
                         style: TextStyle(fontWeight: FontWeight.bold),
@@ -52,7 +52,7 @@ class _CustomAppBarHomePageState extends State<CustomAppBarHomePage> {
                 const TabBar(
                     //indicatorColor: Colors.white,
                     indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(width: 2.0,color: Colors.white),
+                        borderSide: BorderSide(width: 3.0,color: Colors.white),
                         insets: EdgeInsets.symmetric(horizontal:80.0)
                     ),
                     tabs: [

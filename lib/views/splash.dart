@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
-import 'package:passwise_app_rehan_sb/views/home_page.dart';
+import 'package:passwise_app_rehan_sb/views/sign_in_up.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void goToHomeScreen() async{
     await Future.delayed(Duration(milliseconds: 2000));
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>HomePage()));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Sign_In_Up()));
   }
 }
 

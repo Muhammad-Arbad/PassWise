@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passwise_app_rehan_sb/views/add_visitor.dart';
+import 'package:passwise_app_rehan_sb/views/sign_in_up.dart';
 import 'package:passwise_app_rehan_sb/views/splash.dart';
+import 'package:passwise_app_rehan_sb/widgets/our_scaffold.dart';
 
 
 void main() {
@@ -25,9 +28,9 @@ class MyApp extends StatelessWidget {
     ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      //home: VisitorList(),
-      //home: HomePage(),
+      //home: OurScaffoldTemplate(showFAB: true,bodyWidget: Container(),bottomSheet: Container(),appBarWidget: Container()),
       home: SplashScreen(),
+      //home: Sign_In_Up(),
     );
   }
 }

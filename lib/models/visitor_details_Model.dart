@@ -1,5 +1,5 @@
 
-class VisitorsDetail {
+class VisitorsDetailModel {
 
   String? sId;
   String? name;
@@ -11,7 +11,7 @@ class VisitorsDetail {
   String? date;
   int? iV;
 
-  VisitorsDetail(
+  VisitorsDetailModel(
       {this.sId,
         this.name,
         this.phoneNo,
@@ -22,7 +22,7 @@ class VisitorsDetail {
         this.date,
         this.iV});
 
-  VisitorsDetail.fromJson(Map<String, dynamic> json) {
+  VisitorsDetailModel.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     name = json['name'];
     phoneNo = json['phone_no'];

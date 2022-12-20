@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:passwise_app_rehan_sb/models/visitor_details.dart';
+import 'package:passwise_app_rehan_sb/models/sign_up_model.dart';
 
 class HttpRequest {
 
@@ -50,13 +47,42 @@ class HttpRequest {
       token = jsonDecode(response.body)["token"];
       return response.body;
     }
-    // else if(response.statusCode==401){
-    //   return "invalid";
-    // }
     else
       {
         return "null";
       }
 
   }
+
+
+  Future<String> signUp(Sign_Up_Model sign_up_model) async{
+    var headers = {
+      'Content-Type': 'application/json',
+     };
+    var response = await http.post(Uri.parse('https://api.passwise.app/signup'),
+    body : json.encode({
+      "name": sign_up_model.name,
+      "password": sign_up_model.password,
+      "email": sign_up_model.email,
+      "user_role": "Company",
+      "office": sign_up_model.office,
+      "phone_no": sign_up_model.phoneNo,
+      "code": sign_up_model.code
+    }),
+    headers:headers);
+
+
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+      return "success";
+    }
+    else {
+      print(response.reasonPhrase);
+      return jsonDecode(response.body)['message'];
+    }
+
+
+  }
+
 }
