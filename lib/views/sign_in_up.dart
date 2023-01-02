@@ -10,11 +10,26 @@ class Sign_In_Up extends StatefulWidget {
   State<Sign_In_Up> createState() => _Sign_In_UpState();
 }
 
-class _Sign_In_UpState extends State<Sign_In_Up> {
+class _Sign_In_UpState extends State<Sign_In_Up> with SingleTickerProviderStateMixin{
+
+  late TabController tabBarController;
+
   @override
-  Widget build(BuildContext context) => DefaultTabController(
-        length: 2,
-        child: OurScaffoldTemplate(
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    tabBarController = TabController(length: 2, vsync: this);
+    tabBarController.animateTo(1);
+  }
+
+  @override
+  void dispose() {
+    tabBarController.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) => OurScaffoldTemplate(
           appBarWidget: Column(
             children: [
               AppBar(
@@ -33,24 +48,10 @@ class _Sign_In_UpState extends State<Sign_In_Up> {
               ),
               Flexible(
                 child:  Image.asset('assets/logo/passwisewhitelogo.png'),
-                // child: Padding(
-                //   padding: const EdgeInsets.all(0.0),
-                //   child:  Image.asset('assets/logo/passwisewhitelogo.png',fit: BoxFit.cover),
-                // ),
               ),
-              // Flexible(
-              //   child: Container(
-              //     height: 85,
-              //     width: 85,
-              //     decoration: BoxDecoration(
-              //       image: const DecorationImage(
-              //           image: AssetImage('assets/logo/passwise_logo.jpg'),fit: BoxFit.contain),
-              //       borderRadius: BorderRadius.circular(20),
-              //     ),
-              //   ),
-              // ),
                Flexible(
                  child: TabBar(
+                   controller: tabBarController,
                     //indicatorColor: Colors.white,
                     indicator: UnderlineTabIndicator(
                         borderSide: BorderSide(width: 3.0, color: Colors.white),
@@ -95,12 +96,13 @@ class _Sign_In_UpState extends State<Sign_In_Up> {
             ],
           ),
           bodyWidget: Center(
-            child: TabBarView(children: [
+            child: TabBarView(
+                controller: tabBarController,
+                children: [
               SignUp(),
               SignIn(),
             ]),
           ),
           showFAB: false,
-        ),
       );
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
 import 'package:passwise_app_rehan_sb/services/http_request.dart';
+import 'package:passwise_app_rehan_sb/sharedPreferences/user_preferences.dart';
 import 'package:passwise_app_rehan_sb/views/visitor_list.dart';
 import 'package:passwise_app_rehan_sb/widgets/custom_button.dart';
 import 'package:passwise_app_rehan_sb/widgets/custom_text_form_field.dart';
@@ -20,6 +21,7 @@ class _SignInState extends State<SignIn> {
   TextEditingController passwordControllar = TextEditingController();
   HttpRequest loginRequestObject = HttpRequest();
   bool isLaoding = false;
+  bool hidePassword = true;
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -44,11 +46,20 @@ class _SignInState extends State<SignIn> {
                 textInputType: TextInputType.emailAddress,
                 hintTxt: "Email",
                 //icoon: Icons.email,
+                isEmail: true,
                 icoon: Icons.email,
                 controller: emailControllar,
               ),
               TextFormFieldCustomerBuilt(
-                obscText: true,
+                eyeIcon: InkWell(
+                    onTap: (){
+                      _togglePasswordView();
+                    },
+                    child: Icon(hidePassword
+                        ? Icons.visibility
+                        : Icons.visibility_off,color: CustomColors().customGreenColor,)),
+                obscText: hidePassword,
+                showEyeIcon: true,
                 hintTxt: "Password",
                 icoon: Icons.key,
                 controller: passwordControllar,
@@ -79,23 +90,27 @@ class _SignInState extends State<SignIn> {
     Center(child: CircularProgressIndicator(color: CustomColors().customGreenColor,));
   }
 
+  void _togglePasswordView() {
+    setState(() {
+      hidePassword = !hidePassword;
+    });
+  }
+
   void signInfunction() async {
     final isValid = formKey.currentState?.validate();
     if(isValid!){
       setState(() {
         isLaoding = true;
       });
-      String data = await loginRequestObject.requestLogin(emailControllar.text, passwordControllar.text);
-      print(jsonDecode(data));
+      String data = await loginRequestObject.singnIn(emailControllar.text, passwordControllar.text);
+      // print(jsonDecode(data));
       if(data!='null'){
-        print("Login Successful");
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>VisitorList(token: jsonDecode(data)["token"],)));
-        setState(() {
-          isLaoding = false;
-        });
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>VisitorList(token: jsonDecode(data)["token"],)));
+        // setState(() {
+        //   isLaoding = false;
+        // });
       }
       else{
-        print("else part");
         setState(() {
           isLaoding = false;
         });
@@ -104,6 +119,7 @@ class _SignInState extends State<SignIn> {
     }
 
   }
+
   void showToast() {
     Fluttertoast.showToast(
         msg: "Invalid username or password",

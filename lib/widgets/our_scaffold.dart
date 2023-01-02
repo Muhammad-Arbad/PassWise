@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
+import 'package:passwise_app_rehan_sb/widgets/bustom_bottom_sheet.dart';
 
 class OurScaffoldTemplate extends StatelessWidget {
 
@@ -67,7 +68,6 @@ class OurScaffoldTemplate extends StatelessWidget {
           : null,
 
       bottomSheet: bottomSheet!=null? Container(
-        //height:bottomSheetHeight,
         height: bottomSheetHeight,
         color: CustomColors().customWhiteColor,
         child: Container(
@@ -78,7 +78,9 @@ class OurScaffoldTemplate extends StatelessWidget {
                 : BorderRadius.only(topRight: Radius.circular(30)),
             color: CustomColors().customGreenColor,
           ),
-          child: bottomSheet,
+          //child: bottomSheet,
+          child:  bottomSheet
+          //CustomBottomSheet(addVisitor: (){},home: (){}),
         ),
       ):
       null,

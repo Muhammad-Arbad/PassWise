@@ -2,23 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
 
-class TextFormFieldCustomerBuilt extends StatefulWidget {
-  TextFormFieldCustomerBuilt(
+class TextFormFieldCustomerBuiltPhoneNumber extends StatefulWidget {
+  TextFormFieldCustomerBuiltPhoneNumber(
       {Key? key,
-      this.controller,
-      this.hintTxt,
-      this.icoon,
-      this.obscText,
-      this.ontap,
-      this.suffitext,
-      this.textInputType,
-      this.isOptional,
-      this.isNumber,
-      this.maxLines,
-      this.showSeparator,
-      this.eyeIcon,
-      this.showEyeIcon,
-      this.isEmail
+        this.controller,
+        this.hintTxt,
+        this.icoon,
+        this.obscText,
+        this.ontap,
+        this.suffitext,
+        this.textInputType,
+        this.isOptional,
+        this.isNumber,
+        this.maxLines,
+        this.showSeparator,
+        this.eyeIcon,
+        this.showEyeIcon,
+        this.isEmail
       });
 
   TextEditingController? controller;
@@ -34,17 +34,12 @@ class TextFormFieldCustomerBuilt extends StatefulWidget {
 
 
   @override
-  State<TextFormFieldCustomerBuilt> createState() =>
-      _TextFormFieldCustomerBuiltState();
+  State<TextFormFieldCustomerBuiltPhoneNumber> createState() =>
+      _TextFormFieldCustomerBuiltPhoneNumberState();
 }
 
-class _TextFormFieldCustomerBuiltState
-    extends State<TextFormFieldCustomerBuilt> {
-
-  String emailPattern =
-      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-      r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-      r"{0,253}[a-zA-Z0-9])?)*$";
+class _TextFormFieldCustomerBuiltPhoneNumberState
+    extends State<TextFormFieldCustomerBuiltPhoneNumber> {
 
   String phoneNumberPattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
 
@@ -64,27 +59,24 @@ class _TextFormFieldCustomerBuiltState
         keyboardType: widget.textInputType,
         obscureText: widget.obscText ?? false,
         validator: widget.isOptional != true
-            ? widget.isEmail!=true
-                ? (value) {
-                    if (value!.isEmpty) {
-                      return widget.hintTxt != null
-                          ? widget.hintTxt! + " should not be null"
-                          : "Fiels should not be null";
-                    } else {
-                      return null;
-                    }
-                  }
-                : (value) {
-                    RegExp regex = RegExp(emailPattern);
-                    if (value == null ||
-                        value.isEmpty ||
-                        !regex.hasMatch(value)) {
-                      return 'Enter a valid email address';
-                    } else {
-                      return null;
-                    }
-                  }
-            : (value) {},
+            ? widget.isNumber!=true
+            ? (value) {
+          if (value!.isEmpty) {
+            return widget.hintTxt != null
+                ? widget.hintTxt! + " should not be null"
+                : "Fiels should not be null";
+          } else {
+            return null;
+          }
+        } : (value) {
+          if (value == null ||
+              value.isEmpty ||
+              value.length!=11) {
+            return 'Enter a valid Phone Number';
+          } else {
+            return null;
+          }
+        } : (value) {},
 
         onTap: widget.ontap,
         controller: widget.controller,
@@ -125,14 +117,14 @@ class _TextFormFieldCustomerBuiltState
           suffixIcon: widget.showEyeIcon == true ? widget.eyeIcon : null,
           prefixIcon: widget.showSeparator ?? true
               ? Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    border: Border(
-                        right:
-                            BorderSide(color: CustomColors().customGreenColor)),
-                  ),
-                  child: Icon(widget.icoon,
-                      color: CustomColors().customGreenColor))
+              margin: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                border: Border(
+                    right:
+                    BorderSide(color: CustomColors().customGreenColor)),
+              ),
+              child: Icon(widget.icoon,
+                  color: CustomColors().customGreenColor))
               : null,
           //suffixText: widget.suffitext,
         ),

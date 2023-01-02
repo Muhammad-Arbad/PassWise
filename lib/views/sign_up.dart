@@ -3,8 +3,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
 import 'package:passwise_app_rehan_sb/models/sign_up_model.dart';
 import 'package:passwise_app_rehan_sb/services/http_request.dart';
+import 'package:passwise_app_rehan_sb/sharedPreferences/user_preferences.dart';
+import 'package:passwise_app_rehan_sb/views/sign_in_up.dart';
 import 'package:passwise_app_rehan_sb/widgets/custom_button.dart';
 import 'package:passwise_app_rehan_sb/widgets/custom_text_form_field.dart';
+import 'package:passwise_app_rehan_sb/widgets/custom_text_form_phone_no.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -23,7 +26,7 @@ class _SignUpState extends State<SignUp> {
 
 
   HttpRequest signUpRequestObject = HttpRequest();
-  bool isLaoding = false;
+  bool isLaoding = false,hidePassword=true;
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -45,37 +48,45 @@ class _SignUpState extends State<SignUp> {
                 height: 20,
               ),
               TextFormFieldCustomerBuilt(
-                textInputType: TextInputType.emailAddress,
                 hintTxt: "Name",
                 icoon: Icons.person,
                 controller: nameControllar,
               ),
-              TextFormFieldCustomerBuilt(
-                textInputType: TextInputType.emailAddress,
+              TextFormFieldCustomerBuiltPhoneNumber(
+                isNumber: true,
+                textInputType: TextInputType.number,
                 hintTxt: "Phone no",
                 icoon: Icons.phone_android,
                 controller: phoneNoControllar,
               ),
               TextFormFieldCustomerBuilt(
-                textInputType: TextInputType.emailAddress,
                 hintTxt: "Office",
                 icoon: Icons.home_outlined,
                 controller: officeControllar,
               ),
               TextFormFieldCustomerBuilt(
-                textInputType: TextInputType.emailAddress,
+                textInputType: TextInputType.number,
                 hintTxt: "Security Code",
                 icoon: Icons.format_list_numbered,
                 controller: securityCodeControllar,
               ),
               TextFormFieldCustomerBuilt(
+                isEmail: true,
                 textInputType: TextInputType.emailAddress,
                 hintTxt: "Email",
                 icoon: Icons.email_outlined,
                 controller: emailControllar,
               ),
               TextFormFieldCustomerBuilt(
-                textInputType: TextInputType.emailAddress,
+                eyeIcon: InkWell(
+                    onTap: (){
+                      _togglePasswordView();
+                    },
+                    child: Icon(hidePassword
+                        ? Icons.visibility
+                        : Icons.visibility_off,color: CustomColors().customGreenColor,)),
+                obscText: hidePassword,
+                showEyeIcon: true,
                 hintTxt: "Password",
                 icoon: Icons.key_outlined,
                 controller: passwordControllar,
@@ -97,7 +108,14 @@ class _SignUpState extends State<SignUp> {
     Center(child: CircularProgressIndicator(color: CustomColors().customGreenColor,));
   }
 
+  void _togglePasswordView() {
+    setState(() {
+      hidePassword = !hidePassword;
+    });
+  }
+
   void signUpfunction() async {
+
     final isValid = formKey.currentState?.validate();
     if(isValid!){
 
@@ -112,12 +130,15 @@ class _SignUpState extends State<SignUp> {
       setState(() {
         isLaoding = true;
       });
+
+
       String response = await signUpRequestObject.signUp(sign_up_model);
       setState(() {
         isLaoding = false;
       });
       if(response=='success'){
-        showToast(response);
+        showToast("Account Created");
+        emptyTextFields();
       }
       else
         {
@@ -131,8 +152,19 @@ class _SignUpState extends State<SignUp> {
         msg: response,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
-        backgroundColor: response=='success'?Colors.green:Colors.red,
+        backgroundColor: response=='Account Created'?CustomColors().customGreenColor:Colors.red,
         textColor: Colors.white,
         fontSize: 16.0);
+  }
+
+  void emptyTextFields() {
+     nameControllar.text = "";
+     phoneNoControllar.text = "";
+     officeControllar.text = "";
+     securityCodeControllar.text = "";
+     emailControllar.text = "";
+     passwordControllar.text = "";
+     setState(() {
+     });
   }
 }
