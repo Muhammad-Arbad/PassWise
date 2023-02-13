@@ -8,35 +8,34 @@ import 'package:passwise_app_rehan_sb/views/add_visitor.dart';
 import 'package:passwise_app_rehan_sb/views/sign_in_up.dart';
 import 'package:passwise_app_rehan_sb/widgets/bustom_bottom_sheet.dart';
 import 'package:intl/intl.dart';
-import 'package:passwise_app_rehan_sb/widgets/custom_button.dart';
 import 'package:passwise_app_rehan_sb/widgets/custom_text_form_search.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class VisitorList extends StatefulWidget {
-  String token;
 
-  VisitorList({Key? key, required this.token}) : super(key: key);
+
+  VisitorList({Key? key}) : super(key: key);
 
   @override
   State<VisitorList> createState() => _VisitorListState();
 }
 
 class _VisitorListState extends State<VisitorList> {
-  int selectedIndex = 0,currentPageDate = 0,previousIndex = 0;
+  int selectedIndex = 0, currentPageDate = 0, previousIndex = 0;
   bool isLoading = false;
   HttpRequest getPassesHttp = HttpRequest();
   DateTime selectedDate = DateTime.now();
   int selectedDateFromCalendar = DateTime.now().day;
   List<VisitorsDetailModel> sortedVisitorsList = [];
   List<VisitorsDetailModel> allVisitorsList = [];
-  bool showSearchBar = false;
-  String searchString = "",companyName = "";
+  bool showSearchBar = false,showUpdateDeleteIcons = false;
+  String searchString = "", companyName = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    companyName = UserPreferences.getCompanyName()??"Office Name";
+    companyName = UserPreferences.getCompanyName() ?? "Office Name";
     getAllPasses();
   }
 
@@ -50,12 +49,10 @@ class _VisitorListState extends State<VisitorList> {
         child: Scaffold(
           backgroundColor: CustomColors().customWhiteColor,
           appBar: AppBar(
-            leading:
-            IconButton(
+            leading: IconButton(
                 icon: Icon(Icons.logout_outlined,
                     size: 30, color: CustomColors().customGreenColor),
                 onPressed: () {
-
                   wahtToLogOut(context);
                   // UserPreferences.setUserToken("null");
                   // // UserPreferences.clearAllPreferences();
@@ -162,9 +159,10 @@ class _VisitorListState extends State<VisitorList> {
   }
 
   Future<bool> _onBackPressed() async {
-    if (showSearchBar == true) {
+    if (showSearchBar == true || showUpdateDeleteIcons == true) {
       sortByDate();
       setState(() {
+        showUpdateDeleteIcons = false;
         showSearchBar = false;
       });
       return await false;
@@ -180,23 +178,34 @@ class _VisitorListState extends State<VisitorList> {
       isLoading = true;
     });
 
-    List data = await getPassesHttp.getAllPasses(widget.token);
+    List data = await getPassesHttp.getAllPasses();
     for (int i = 0; i < data.length; i++) {
+      print("For LOOP CALLING");
       allVisitorsList.add(VisitorsDetailModel.fromJson(data[i]));
       // sortedVisitorsList.add(VisitorsDetailModel.fromJson(data[i]));
     }
+    print("LENGTH = " + allVisitorsList.length.toString());
     sortedVisitorsList = allVisitorsList;
-
     sortByDate();
   }
 
   Widget singleVisitorTile(VisitorsDetailModel visitorsDetail, int index) {
     previousIndex = index - 1;
     return GestureDetector(
+      onLongPress: (){
+
+        setState((){
+          showUpdateDeleteIcons = true;
+          selectedIndex = index;
+          currentPageDate = selectedDate.day;
+        });
+
+      },
       onTap: () => setState(
         () {
           selectedIndex = index;
           currentPageDate = selectedDate.day;
+          showUpdateDeleteIcons = false;
         },
       ),
       child: Container(
@@ -282,7 +291,8 @@ class _VisitorListState extends State<VisitorList> {
                   ),
                   Column(
                     children: [
-                      (selectedIndex == index && currentPageDate==selectedDateFromCalendar)
+                      (selectedIndex == index &&
+                              currentPageDate == selectedDateFromCalendar)
                           ? Container(
                               child: CustomPaint(
                                 size: Size(13, 13),
@@ -312,25 +322,31 @@ class _VisitorListState extends State<VisitorList> {
                 flex: 5,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: (selectedIndex == index && currentPageDate==selectedDateFromCalendar)
+                    color: (selectedIndex == index &&
+                            currentPageDate == selectedDateFromCalendar)
                         ? CustomColors().customGreenColor
                         : CustomColors().customTileColor,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                     boxShadow: kElevationToShadow[4],
                   ),
                   //padding: EdgeInsets.all(5),
-                  padding: EdgeInsets.fromLTRB(5, 5, 30, 5),
+                  padding: EdgeInsets.fromLTRB(5, 5, 10, 5),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                          flex: 1,
-                          child: Icon(
+                      // Expanded(
+                          // flex: 1,
+                          // child:
+                          Icon(
                             Icons.calendar_month_outlined,
                             color: CustomColors().customWhiteColor,
-                          )),
+                          ),
+                      // ),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Expanded(
-                          flex: 10,
+                          // flex: 3,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -343,7 +359,9 @@ class _VisitorListState extends State<VisitorList> {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
-                                      color:(selectedIndex == index && currentPageDate==selectedDateFromCalendar)
+                                      color: (selectedIndex == index &&
+                                              currentPageDate ==
+                                                  selectedDateFromCalendar)
                                           ? Colors.white
                                           : Colors.black,
                                     ),
@@ -351,7 +369,9 @@ class _VisitorListState extends State<VisitorList> {
                                   Text(
                                     displayHourAndMinutes(visitorsDetail.date),
                                     style: TextStyle(
-                                      color: (selectedIndex == index && currentPageDate==selectedDateFromCalendar)
+                                      color: (selectedIndex == index &&
+                                              currentPageDate ==
+                                                  selectedDateFromCalendar)
                                           ? Colors.white
                                           : CustomColors().customTextGrey,
                                       fontWeight: FontWeight.bold,
@@ -371,14 +391,18 @@ class _VisitorListState extends State<VisitorList> {
                                       style: TextStyle(
                                         //color: CustomColors().customTextGrey,
                                         fontSize: 12,
-                                        color: (selectedIndex == index && currentPageDate==selectedDateFromCalendar)
+                                        color: (selectedIndex == index &&
+                                                currentPageDate ==
+                                                    selectedDateFromCalendar)
                                             ? Colors.white
                                             : CustomColors().customTextGrey,
                                       )),
                                   Text(visitorsDetail.phoneNo ?? "",
                                       style: TextStyle(
                                           //color: CustomColors().customTextGrey,
-                                          color: (selectedIndex == index && currentPageDate==selectedDateFromCalendar)
+                                          color: (selectedIndex == index &&
+                                                  currentPageDate ==
+                                                      selectedDateFromCalendar)
                                               ? Colors.white
                                               : CustomColors().customTextGrey,
                                           fontSize: 12)),
@@ -387,17 +411,78 @@ class _VisitorListState extends State<VisitorList> {
                               SizedBox(
                                 height: 5,
                               ),
-                              Text(
-                                companyName,
-                                style: TextStyle(
-                                    color: (selectedIndex == index && currentPageDate==selectedDateFromCalendar)
-                                        ? Colors.white
-                                        : CustomColors().customTextGrey,
-                                    //color: CustomColors().customTextGrey,
-                                    fontSize: 12),
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    companyName,
+                                    style: TextStyle(
+                                        color: (selectedIndex == index &&
+                                                currentPageDate ==
+                                                    selectedDateFromCalendar)
+                                            ? Colors.white
+                                            : CustomColors().customTextGrey,
+                                        //color: CustomColors().customTextGrey,
+                                        fontSize: 12),
+                                  ),
+
+                                  // if(selectedIndex == index && showUpdateDeleteIcons)
+                                  //     Row(
+                                  //       children: [
+                                  //         Icon(Icons.update_outlined),
+                                  //         Icon(Icons.delete_outline),
+                                  //       ],
+                                  //     )
+                                ],
                               ),
                             ],
                           )),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      if(selectedIndex == index && showUpdateDeleteIcons)
+                         Column(
+                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: (){
+                                  print("Update");
+                                  Navigator.push(
+                                      context, MaterialPageRoute(builder: (context) => AddVisitor()));
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle
+                                  ),
+
+                                  child: Icon(Icons.update_outlined,color: Colors.deepPurple,),
+                                ),
+                              ),
+                              SizedBox(height: 5,),
+                              GestureDetector(
+                                onTap: (){
+                                  wahtToDelete(context,visitorsDetail);
+
+                                  // getPassesHttp.deleteVisitor(visitorsDetail.sId??"");
+                                  // setState(() {});
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle
+                                  ),
+
+                                  child: Icon(Icons.delete_outline,color: Colors.red,),
+                                ),
+                              )
+
+                            ],
+                          ),
+
                     ],
                   ),
                 )),
@@ -408,24 +493,24 @@ class _VisitorListState extends State<VisitorList> {
   }
 
   String displayHourAndMinutes(String? date) {
-    DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    // DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm").parse(date!);
     var inputDate = DateTime.parse(parseDate.toString());
     var outputDate = DateFormat.Hm().format(inputDate);
     return outputDate;
   }
 
   String displayOnlyHours(String? date) {
-    DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm").parse(date!);
+    // DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
     var inputDate = DateTime.parse(parseDate.toString());
     var outputDate = DateFormat.H().format(inputDate);
     return outputDate;
   }
 
   String displayOnlyDate(String? date) {
-    DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    // DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm").parse(date!);
     var inputDate = DateTime.parse(parseDate.toString());
     // print("inputDate" + inputDate.toString());
     //var outputDate = DateFormat.H().format(inputDate);
@@ -435,8 +520,8 @@ class _VisitorListState extends State<VisitorList> {
   }
 
   DateTime stringToDateTime(String? date) {
-    DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    // DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(date!);
+    DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm").parse(date!);
     return parseDate;
   }
 
@@ -447,7 +532,7 @@ class _VisitorListState extends State<VisitorList> {
           markerBuilder: ((context, day, events) {
             if (day.day == selectedDate.day &&
                 day.month == selectedDate.month &&
-                day.year == selectedDate.year ) {
+                day.year == selectedDate.year) {
               return Container(
                   margin: EdgeInsets.only(bottom: 10),
                   height: 3.0,
@@ -457,7 +542,8 @@ class _VisitorListState extends State<VisitorList> {
           }),
           defaultBuilder: (context, dateTime, datetime) {
             if (dateTime.day == selectedDate.day &&
-                dateTime.month == selectedDate.month) {
+                dateTime.month == selectedDate.month&&
+                dateTime.year == selectedDate.year) {
               return Center(
                 child: Text(
                   dateTime.day.toString(),
@@ -476,7 +562,7 @@ class _VisitorListState extends State<VisitorList> {
           dowBuilder: (context, day) {
             final text = DateFormat('EEE').format(day);
             if (day.day == selectedDate.day &&
-                day.month == selectedDate.month&&
+                day.month == selectedDate.month &&
                 day.year == selectedDate.year) {
               return Center(
                 child: Text(
@@ -519,12 +605,17 @@ class _VisitorListState extends State<VisitorList> {
 
   //List<VisitorsDetailModel>
   void sortByDate() {
+    print("SORT BY DATE CALLIMG");
     final listData = allVisitorsList.where((element) {
-      DateTime parseDate =
-          DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(element.date!);
+      // print(element.date);
+      DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm").parse(element.date!);
+      // DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(element.date!);
       var inputDate = DateTime.parse(parseDate.toString());
+
+      // print(inputDate);
       if (inputDate.month == selectedDate.month &&
-          inputDate.day == selectedDate.day) {
+          inputDate.day == selectedDate.day &&
+          inputDate.year == selectedDate.year) {
         return true;
       } else {
         return false;
@@ -534,8 +625,8 @@ class _VisitorListState extends State<VisitorList> {
       isLoading = false;
       sortedVisitorsList = listData;
       sortedVisitorsList.sort((a, b) {
-        // print(int.parse(displayOnlyHours(a.date)).toString()+" aa");
-        // print(int.parse(displayOnlyHours(b.date)).toString()+" bb");
+        print(int.parse(displayOnlyHours(a.date)).toString() + " aa");
+        print(int.parse(displayOnlyHours(b.date)).toString() + " bb");
         return int.parse(displayOnlyHours(a.date))
             .compareTo(int.parse(displayOnlyHours(b.date)));
       });
@@ -574,49 +665,107 @@ class _VisitorListState extends State<VisitorList> {
     showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text('Do you want to Log out ?'),
+              title: Text('Do you want to Log out ?'),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "No",
+                      style: TextStyle(color: CustomColors().customGreenColor),
+                    )),
+                TextButton(
+                    onPressed: () async {
+                      // UserPreferences.setUserToken("null");
+                      // UserPreferences.setExpiryTime(DateTime.now().toString());
+                      // UserPreferences.setCompanyName("null");
+                      UserPreferences.clearAllPreferences();
+                      Navigator.pop(context);
+                      setState(() {
+                        isLoading = true;
+                      });
+                      await Future.delayed(Duration(milliseconds: 500));
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (context) => Sign_In_Up()),
+                          (Route<dynamic> route) => false);
+                      //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Sign_In_Up()));
+                      Fluttertoast.showToast(
+                          msg: "Loged Out",
+                          gravity: ToastGravity.CENTER,
+                          backgroundColor: CustomColors().customGreenColor);
+                    },
+                    child: Text("Yes",
+                        style:
+                            TextStyle(color: CustomColors().customGreenColor))),
+                // CustomButtonWidget(btntext: "No",btnonPressed: (){Navigator.pop(context);},borderRadius: 10),
+                // CustomButtonWidget(btntext: "Yes",btnonPressed: ()async{
+                //
+                //
+                //   // UserPreferences.setUserToken("null");
+                //   // UserPreferences.setExpiryTime(DateTime.now().toString());
+                //   // UserPreferences.setCompanyName("null");
+                //   UserPreferences.clearAllPreferences();
+                //   Navigator.pop(context);
+                //   setState(() {
+                //     isLoading = true;
+                //   });
+                //   await Future.delayed(Duration(milliseconds: 500));
+                //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
+                //       Sign_In_Up()), (Route<dynamic> route) => false);
+                //   //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Sign_In_Up()));
+                //   Fluttertoast.showToast(msg: "Loged Out",gravity: ToastGravity.CENTER,backgroundColor: CustomColors().customGreenColor);
+                //
+                // },borderRadius: 10),
+              ],
+            ));
+  }
+
+
+  void wahtToDelete(BuildContext context,VisitorsDetailModel visitorsDetailModel) {
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Do you want to Delete ?'),
           actions: [
-            TextButton(onPressed: (){Navigator.pop(context);}, child: Text("No",style: TextStyle(color: CustomColors().customGreenColor),)),
-            TextButton(onPressed: ()async{
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "No",
+                  style: TextStyle(color: CustomColors().customGreenColor),
+                )),
+            TextButton(
+
+                onPressed: () async{
+                  Navigator.pop(context);
+                  setState(() {
+                    isLoading = true;
+                    showUpdateDeleteIcons = false;
+                  });
+                  String msg = await getPassesHttp.deleteVisitor(visitorsDetailModel.sId??"");
 
 
-              // UserPreferences.setUserToken("null");
-              // UserPreferences.setExpiryTime(DateTime.now().toString());
-              // UserPreferences.setCompanyName("null");
-              UserPreferences.clearAllPreferences();
-              Navigator.pop(context);
-              setState(() {
-                isLoading = true;
-              });
-              await Future.delayed(Duration(milliseconds: 500));
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                  Sign_In_Up()), (Route<dynamic> route) => false);
-              //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Sign_In_Up()));
-              Fluttertoast.showToast(msg: "Loged Out",gravity: ToastGravity.CENTER,backgroundColor: CustomColors().customGreenColor);
 
-            }, child: Text("Yes",style: TextStyle(color: CustomColors().customGreenColor))),
-            // CustomButtonWidget(btntext: "No",btnonPressed: (){Navigator.pop(context);},borderRadius: 10),
-            // CustomButtonWidget(btntext: "Yes",btnonPressed: ()async{
-            //
-            //
-            //   // UserPreferences.setUserToken("null");
-            //   // UserPreferences.setExpiryTime(DateTime.now().toString());
-            //   // UserPreferences.setCompanyName("null");
-            //   UserPreferences.clearAllPreferences();
-            //   Navigator.pop(context);
-            //   setState(() {
-            //     isLoading = true;
-            //   });
-            //   await Future.delayed(Duration(milliseconds: 500));
-            //   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-            //       Sign_In_Up()), (Route<dynamic> route) => false);
-            //   //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Sign_In_Up()));
-            //   Fluttertoast.showToast(msg: "Loged Out",gravity: ToastGravity.CENTER,backgroundColor: CustomColors().customGreenColor);
-            //
-            // },borderRadius: 10),
+                  if(msg == "success"){
+
+                    sortedVisitorsList.remove(visitorsDetailModel);
+                    allVisitorsList.remove(visitorsDetailModel);
+
+                    setState(() {
+                      isLoading = false;
+                    });
+
+                  }
+
+
+                },
+                child: Text("Yes",
+                    style:
+                    TextStyle(color: CustomColors().customGreenColor))),
           ],
-        )
-    );
+        ));
   }
 }
 
@@ -655,4 +804,3 @@ class CirclePainterFilled extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
-

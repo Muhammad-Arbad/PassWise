@@ -26,7 +26,8 @@ class VisitorsDetailModel {
     sId = json['_id'];
     name = json['name'];
     phoneNo = json['phone_no'];
-    cId = json['c_id'];
+    // cId = json['c_id'];
+    cId = json['host_id'];
     cnic = json['cnic'];
     reason = json['reason'];
     qrcode = json['qrcode'];
@@ -39,7 +40,8 @@ class VisitorsDetailModel {
     data['_id'] = this.sId;
     data['name'] = this.name;
     data['phone_no'] = this.phoneNo;
-    data['c_id'] = this.cId;
+    // data['c_id'] = this.cId;
+    data['host_id'] = this.cId;
     data['cnic'] = this.cnic;
     data['reason'] = this.reason;
     data['qrcode'] = this.qrcode;

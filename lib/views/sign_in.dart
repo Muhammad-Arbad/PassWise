@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:passwise_app_rehan_sb/constants/custom_colors.dart';
 import 'package:passwise_app_rehan_sb/services/http_request.dart';
-import 'package:passwise_app_rehan_sb/sharedPreferences/user_preferences.dart';
 import 'package:passwise_app_rehan_sb/views/visitor_list.dart';
 import 'package:passwise_app_rehan_sb/widgets/custom_button.dart';
 import 'package:passwise_app_rehan_sb/widgets/custom_text_form_field.dart';
@@ -102,10 +100,11 @@ class _SignInState extends State<SignIn> {
       setState(() {
         isLaoding = true;
       });
-      String data = await loginRequestObject.singnIn(emailControllar.text, passwordControllar.text);
+      String data = await loginRequestObject.signIn(emailControllar.text, passwordControllar.text);
       // print(jsonDecode(data));
       if(data!='null'){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>VisitorList(token: jsonDecode(data)["token"],)));
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>VisitorList(token: jsonDecode(data)["token"],)));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>VisitorList()));
         // setState(() {
         //   isLaoding = false;
         // });

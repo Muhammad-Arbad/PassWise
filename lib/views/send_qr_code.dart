@@ -62,12 +62,16 @@ class _SendQRCodeState extends State<SendQRCode> {
         bottomSheet: CustomBottomSheet(
             home: (){
               Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-                  VisitorList(token: "token")), (Route<dynamic> route) => false);
+                  VisitorList()), (Route<dynamic> route) => false);
               // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>VisitorList(token: "token")));
               },
             addVisitor: (){
 
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>AddVisitor()));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>
+                  // AddVisitor(isEditing: false,)
+                  AddVisitor()
+
+              ));
               // Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
               //     AddVisitor()), (Route<dynamic> route) => false);
               // Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => AddVisitor()));
@@ -86,7 +90,7 @@ class _SendQRCodeState extends State<SendQRCode> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document",
+                  "Share this QR code with your guest. Thank you for using this application",
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
@@ -150,7 +154,7 @@ class _SendQRCodeState extends State<SendQRCode> {
 
   Future<bool> _onBackPressed() async {
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-        VisitorList(token: "token")), (Route<dynamic> route) => false);
+        VisitorList()), (Route<dynamic> route) => false);
     return await true;
   }
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
@@ -18,7 +20,13 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:flutter/cupertino.dart';
 
 class AddVisitor extends StatefulWidget {
-  const AddVisitor({Key? key}) : super(key: key);
+  bool? isEditing = false;
+  AddVisitorModel? addVisitorModel;
+  AddVisitor({Key? key,
+    // required this.isEditing
+    this.isEditing,
+    this.addVisitorModel
+  }) : super(key: key);
 
   @override
   State<AddVisitor> createState() => _AddVisitorState();
@@ -31,10 +39,8 @@ class _AddVisitorState extends State<AddVisitor> {
   TextEditingController phoneNoController = TextEditingController();
   TextEditingController cnicController = TextEditingController();
   TextEditingController reasonController = TextEditingController();
-  DateTime? dateTimeNow,selectedDate;
+  DateTime? dateTimeNow, selectedDate;
   File? visitorImage;
-
-
 
   bool isLoading = false;
 
@@ -105,7 +111,8 @@ class _AddVisitorState extends State<AddVisitor> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    dateTimeNow = DateTime(DateTime.now().year,DateTime.now().month,DateTime.now().day,DateTime.now().hour,DateTime.now().minute);
+    dateTimeNow = DateTime(DateTime.now().year, DateTime.now().month,
+        DateTime.now().day, DateTime.now().hour, DateTime.now().minute);
 
     _currentHour = dateTimeNow!.hour;
     _currentMinute = dateTimeNow!.minute;
@@ -126,8 +133,7 @@ class _AddVisitorState extends State<AddVisitor> {
   Widget build(BuildContext context) {
     return OurScaffoldTemplate(
       resizeToAvoidBottomInset: false,
-      appBarWidget:
-          Column(
+      appBarWidget: Column(
         children: [
           AppBar(
             centerTitle: true,
@@ -143,33 +149,61 @@ class _AddVisitorState extends State<AddVisitor> {
             //   ),
             // ),
           ),
-
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child:
-
-                  visitorImage==null?
-                  InkWell(
-                      onTap: (){
+          Flexible(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: visitorImage == null
+                  ? InkWell(
+                      onTap: () {
                         selectOrCaptureImage(context);
                       },
-                      child: Image.asset('assets/add_visitor.png')):
-                  InkWell(
-                      onTap: (){
+                      child: Image.asset('assets/add_visitor.png'))
+                  : InkWell(
+                      onTap: () {
                         selectOrCaptureImage(context);
                       },
-                      child: Container(
-                        color: Colors.black,
+                      child:
+                      Stack(alignment: Alignment.center, children: [
+                        Container(
                           width: 200,
-                          //height: 300,
-                          child: InteractiveViewer(
-                              maxScale: 10.0,
-                              child: Image.file(visitorImage!,fit: BoxFit.contain,))))
-                  //     :
-                  // Image.asset('assets/add_visitor.png'),
-                ),
+                          //height: 270,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/add_visitor.png"))),
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child:Container(
+                              child: Container(
+                                color: Colors.black,
+                                child: InteractiveViewer(
+                                  maxScale: 10.0,
+                                  child: Image.file(
+                                    visitorImage!,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ),
+                        ),
+                      ]),
+                      // Container(
+                      //   color: Colors.black,
+                      //   width: 200,
+                      //   //height: 300,
+                      //   child: InteractiveViewer(
+                      //     maxScale: 10.0,
+                      //     child: Image.file(
+                      //       visitorImage!,
+                      //       fit: BoxFit.contain,
+                      //     ),
+                      //   ),
+                      // ),
+                    ),
+              //     :
+              // Image.asset('assets/add_visitor.png'),
             ),
+          ),
         ],
       ),
       showFAB: true,
@@ -177,7 +211,7 @@ class _AddVisitorState extends State<AddVisitor> {
       bodyWidget: !isLoading
           ? Scaffold(
               //backgroundColor: Colors.red,
-        backgroundColor: CustomColors().customGreenColor,
+              backgroundColor: CustomColors().customGreenColor,
               // backgroundColor: MediaQuery.of(context).viewInsets.bottom==0 ?
               // CustomColors().customGreenColor:
               // CustomColors().customWhiteColor,
@@ -249,93 +283,107 @@ class _AddVisitorState extends State<AddVisitor> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Expanded(
-                                    child: Container(
-                                        padding: EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.all(Radius.circular(5)),
-                                          color: CustomColors().customGreenColor,
+                                  child: Container(
+                                      padding: EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                        color: CustomColors().customGreenColor,
+                                      ),
+                                      child: IgnorePointer(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            singleNumberPicker(
+                                                currentHourOnlyTwelve,
+                                                // _currentHour <= 12
+                                                //     ? _currentHour
+                                                //     : _currentHour - 12,
+                                                12,
+                                                Colors.white,
+                                                Colors.black,
+                                                changeHour,
+                                                0,
+                                                _currentHour <= 12
+                                                    ? _currentHour
+                                                        .toString()
+                                                        .padLeft(2, "0")
+                                                    : (_currentHour - 12)
+                                                        .toString()
+                                                        .padLeft(2, "0")),
+                                            singleNumberPicker(
+                                                _currentMinute,
+                                                59,
+                                                Colors.white,
+                                                Colors.black,
+                                                changeMinute,
+                                                0,
+                                                _currentMinute
+                                                    .toString()
+                                                    .padLeft(2, "0")),
+                                            singleStringPicker(
+                                                0,
+                                                1,
+                                                setPmAm,
+                                                _currentHour <= 12 ? 0 : 1,
+                                                changeAmPm,
+                                                30,
+                                                CustomColors().customGreenColor,
+                                                Colors.white),
+                                          ],
                                         ),
-                                        child: IgnorePointer(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              singleNumberPicker(
-                                                  currentHourOnlyTwelve,
-                                                  // _currentHour <= 12
-                                                  //     ? _currentHour
-                                                  //     : _currentHour - 12,
-                                                  12,
-                                                  Colors.white,
-                                                  Colors.black,
-                                                  changeHour,
-                                                  0,
-                                                  _currentHour<=12?_currentHour.toString().padLeft(2,"0"):(_currentHour-12).toString().padLeft(2,"0")),
-                                              singleNumberPicker(
-                                                  _currentMinute,
-                                                  59,
-                                                  Colors.white,
-                                                  Colors.black,
-                                                  changeMinute,
-                                                  0,_currentMinute.toString().padLeft(2,"0")),
-                                              singleStringPicker(
-                                                  0,
-                                                  1,
-                                                  setPmAm,
-                                                  _currentHour<=12?0:1,
-                                                  changeAmPm,
-                                                  30,
-                                                  CustomColors().customGreenColor,
-                                                  Colors.white),
-                                            ],
-                                          ),
-                                        )),
+                                      )),
                                 ),
                                 SizedBox(
                                   width: 10,
                                 ),
                                 Expanded(
                                   child: Container(
-                                    padding: EdgeInsets.all(8.0),
-                                    decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(5)),
-                                      color: CustomColors().customGreenColor,
-                                    ),
-                                    child: IgnorePointer(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          singleNumberPicker(
-                                              _currentDate,
-                                              31,
-                                              Colors.white,
-                                              Colors.black,
-                                              changeDate,
-                                              1,_currentDate.toString().padLeft(2,"0")),
-                                          singleStringPicker(
-                                              0,
-                                              11,
-                                              setMonth,
-                                              //setMonthIndex,
-                                              _currentMonth-1,
-                                              changeMonth,
-                                              50,
-                                              Colors.white,
-                                              Colors.black),
-                                          singleNumberPicker(
-                                              _currentYear - 2000,
-                                              50,
-                                              CustomColors().customGreenColor,
-                                              Colors.white,
-                                              changeYear,
-                                              0,_currentYear.toString().substring(2)),
-                                        ],
+                                      padding: EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                        color: CustomColors().customGreenColor,
                                       ),
-                                    )
-                                  ),
+                                      child: IgnorePointer(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            singleNumberPicker(
+                                                _currentDate,
+                                                31,
+                                                Colors.white,
+                                                Colors.black,
+                                                changeDate,
+                                                1,
+                                                _currentDate
+                                                    .toString()
+                                                    .padLeft(2, "0")),
+                                            singleStringPicker(
+                                                0,
+                                                11,
+                                                setMonth,
+                                                //setMonthIndex,
+                                                _currentMonth - 1,
+                                                changeMonth,
+                                                50,
+                                                Colors.white,
+                                                Colors.black),
+                                            singleNumberPicker(
+                                                _currentYear - 2000,
+                                                50,
+                                                CustomColors().customGreenColor,
+                                                Colors.white,
+                                                changeYear,
+                                                0,
+                                                _currentYear
+                                                    .toString()
+                                                    .substring(2)),
+                                          ],
+                                        ),
+                                      )),
                                 ),
                               ],
                             ),
@@ -352,17 +400,17 @@ class _AddVisitorState extends State<AddVisitor> {
                 color: CustomColors().customGreenColor,
               ),
             ),
-      bottomSheet: CustomBottomSheet(
-          home: (){Navigator.pop(context);},
-          addVisitor: (){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => super.widget));}),
+      bottomSheet: CustomBottomSheet(home: () {
+        Navigator.pop(context);
+      }, addVisitor: () {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) => super.widget));
+      }),
       fabOnPress: addVisitorFunction,
     );
   }
 
   void addVisitorFunction() async {
-
-
     int selectedHourInTwentyFourFormat = 0;
     zeroForAM_OneForPM == 0
         ? selectedHourInTwentyFourFormat = currentHourOnlyTwelve
@@ -388,13 +436,18 @@ class _AddVisitorState extends State<AddVisitor> {
         "T" +
         _currentHour.toString() +
         ":" +
-        _currentMinute.toString() +
-        ":00.000Z";
+        _currentMinute.toString()
+
+        // +
+        // ":00.000Z"
+    ;
 
     //String sd = selectedDate.toString();
 
-    DateTime parseDate =
-        DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(selectedDate);
+    log("SELECTED DATE = "+selectedDate);
+    DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm").parse(selectedDate);
+    // DateTime parseDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(selectedDate);
+    log("SELECTED PARSE DATE = "+parseDate.toString());
     // print("Parsed Date = "+parseDate.toString());
     // print(today.toString());
 
@@ -406,65 +459,65 @@ class _AddVisitorState extends State<AddVisitor> {
     final isValid = formKey.currentState?.validate();
     if (isValid!) {
       if (parseDate.compareTo(today) < 0) {
-        Fluttertoast.showToast(msg: "Previous date not Allowed",backgroundColor: Colors.red,gravity: ToastGravity.CENTER_RIGHT);
-      }
-
-      else if(visitorImage == null){
-        Fluttertoast.showToast(msg: "Add Visitor Image",backgroundColor: Colors.red,gravity: ToastGravity.CENTER_RIGHT);
-      }
-
-      else {
-
+        Fluttertoast.showToast(
+            msg: "Previous date not Allowed",
+            backgroundColor: Colors.red,
+            gravity: ToastGravity.CENTER_RIGHT);
+      } else if (visitorImage == null) {
+        Fluttertoast.showToast(
+            msg: "Add Visitor Image",
+            backgroundColor: Colors.red,
+            gravity: ToastGravity.CENTER_RIGHT);
+      } else {
         setState(() {
           isLoading = true;
         });
 
-         String imageUrl = await addVisitorRequest.uploadImage(visitorImage!.path);
-         // print("imageUrl"+imageUrl);
+        String imageUrl =
+            await addVisitorRequest.uploadImage(visitorImage!.path);
+        // print("imageUrl"+imageUrl);
 
-         if(await imageUrl !="null"){
+        if (await imageUrl != "null") {
+          String imgUrl = jsonDecode(imageUrl)['imageUrl'];
+          print('IMAGE URL = '+imgUrl);
+          addVisitorModel = AddVisitorModel(
+              name: nameController.text,
+              phoneNo: phoneNoController.text,
+              cnic: cnicController.text,
+              reason: reasonController.text,
+              date: parseDate.toString(),
+              // date: selectedDate,
+              qrcode: qrCode,
+              image: imgUrl);
+              // image: imageUrl);
 
-           addVisitorModel = AddVisitorModel(
-               name: nameController.text,
-               phoneNo: phoneNoController.text,
-               cnic: cnicController.text,
-               reason: reasonController.text,
-               date: selectedDate,
-               qrcode: qrCode,
-               image: imageUrl);
+          // print("After Image URL");
 
+          String? response =
+              await addVisitorRequest.addVisitor(addVisitorModel);
 
-           // print("After Image URL");
+          if (response == "allowed") {
+            Fluttertoast.showToast(
+                msg: nameController.text + " added",
+                backgroundColor: CustomColors().customGreenColor,
+                gravity: ToastGravity.CENTER);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SendQRCode(qrCode: qrCode)));
+          } else {
+            Fluttertoast.showToast(
+                msg: response!,
+                backgroundColor: Colors.red,
+                gravity: ToastGravity.CENTER_RIGHT);
+          }
 
-           String? response = await addVisitorRequest.addVisitor(addVisitorModel);
-
-           if (response == "allowed") {
-             Fluttertoast.showToast(
-                 msg: nameController.text + " added",
-                 backgroundColor: CustomColors().customGreenColor,
-                 gravity: ToastGravity.CENTER);
-             Navigator.pushReplacement(
-                 context,
-                 MaterialPageRoute(
-                     builder: (context) => SendQRCode(qrCode: qrCode)));
-           } else {
-             Fluttertoast.showToast(msg: response!,backgroundColor: Colors.red,gravity: ToastGravity.CENTER_RIGHT);
-           }
-
-
-           setState((){
-             isLoading = false;
-           });
-
-      }
-
-
-
+          setState(() {
+            isLoading = false;
+          });
+        }
       }
     }
-
-
-
   }
 
   // singleNumberPicker(start, maxValue, bgColor, txtColor,
@@ -577,101 +630,91 @@ class _AddVisitorState extends State<AddVisitor> {
   //   );
   // }
 
-  void _pickDateDialog(BuildContext context) async{
-
-
+  void _pickDateDialog(BuildContext context) async {
     await showDatePicker(
-        builder: (context, child) {
-          return Theme(
-            data: Theme.of(context).copyWith(
-              colorScheme: ColorScheme.light(
-                primary: CustomColors().customGreenColor, // <-- SEE HERE
-                onPrimary: CustomColors().customWhiteColor, // <-- SEE HERE
-                onSurface: Colors.black, // <-- SEE HERE
-              ),
-              textButtonTheme: TextButtonThemeData(
-                style: TextButton.styleFrom(
-                  primary: Colors.black, // button text color
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: CustomColors().customGreenColor, // <-- SEE HERE
+                    onPrimary: CustomColors().customWhiteColor, // <-- SEE HERE
+                    onSurface: Colors.black, // <-- SEE HERE
+                  ),
+                  textButtonTheme: TextButtonThemeData(
+                    style: TextButton.styleFrom(
+                      primary: Colors.black, // button text color
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            child: child!,
-          );
-        },
-        context: context,
-        initialDate: DateTime.now(),
-        //which date will display when user open the picker
-        firstDate: DateTime(2000),
-        //what will be the previous supported year in picker
-        lastDate: DateTime(2050)) //what will be the up to supported date in picker
-        .then((pickedDate) async{
+                child: child!,
+              );
+            },
+            context: context,
+            initialDate: DateTime.now(),
+            //which date will display when user open the picker
+            firstDate: DateTime(2000),
+            //what will be the previous supported year in picker
+            lastDate: DateTime(
+                2050)) //what will be the up to supported date in picker
+        .then((pickedDate) async {
       //then usually do the future job
       if (pickedDate == null) {
         //if user tap cancel then this function will stop
         return;
-      }else{
-          selectedDate = pickedDate;
-          TimeOfDay? selectedTime = await showTimePicker(
-              builder: (context, child) {
-                return Theme(
-                  data: Theme.of(context).copyWith(
-                    colorScheme: ColorScheme.light(
-                      primary: CustomColors().customGreenColor, // <-- SEE HERE
-                      onPrimary: CustomColors().customWhiteColor, // <-- SEE HERE
-                      onSurface: Colors.black, // <-- SEE HERE
-                    ),
-                    textButtonTheme: TextButtonThemeData(
-                      style: TextButton.styleFrom(
-                        primary: Colors.black, // button text color
-                      ),
+      } else {
+        selectedDate = pickedDate;
+        TimeOfDay? selectedTime = await showTimePicker(
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: CustomColors().customGreenColor, // <-- SEE HERE
+                    onPrimary: CustomColors().customWhiteColor, // <-- SEE HERE
+                    onSurface: Colors.black, // <-- SEE HERE
+                  ),
+                  textButtonTheme: TextButtonThemeData(
+                    style: TextButton.styleFrom(
+                      primary: Colors.black, // button text color
                     ),
                   ),
-                  child: child!,
-                );
-              },
-              context: context,
-              initialTime: TimeOfDay.now()
-          );
+                ),
+                child: child!,
+              );
+            },
+            context: context,
+            initialTime: TimeOfDay.now());
 
-          if(selectedTime!=null){
+        if (selectedTime != null) {
+          DateTime dateTimeSelected = DateTime(
+              selectedDate!.year,
+              selectedDate!.month,
+              selectedDate!.day,
+              selectedTime!.hour,
+              selectedTime!.minute);
 
-            DateTime dateTimeSelected = DateTime(
-                selectedDate!.year,
-                selectedDate!.month,
-                selectedDate!.day,
-                selectedTime!.hour,
-                selectedTime!.minute);
+          setState(() {
+            selectedDate = dateTimeSelected;
+            _currentHour = selectedDate!.hour;
+            _currentMinute = selectedDate!.minute;
+            _currentYear = selectedDate!.year;
+            _currentMonth = selectedDate!.month;
+            _currentDate = selectedDate!.day;
+          });
 
-            setState(() {
-              selectedDate = dateTimeSelected;
-              _currentHour = selectedDate!.hour;
-              _currentMinute = selectedDate!.minute;
-              _currentYear = selectedDate!.year;
-              _currentMonth = selectedDate!.month;
-              _currentDate = selectedDate!.day;
-            });
+          // print("Selected Date Time = "+selectedDate.toString());
+          // print("Current hour = "+_currentHour.toString());
+          // print("Current hour = "+_currentMinute.toString());
+          // print("Current hour = "+_currentYear.toString());
+          // print("Current hour = "+_currentMonth.toString());
+          // print("Current hour = "+_currentDate.toString());
 
-            // print("Selected Date Time = "+selectedDate.toString());
-            // print("Current hour = "+_currentHour.toString());
-            // print("Current hour = "+_currentMinute.toString());
-            // print("Current hour = "+_currentYear.toString());
-            // print("Current hour = "+_currentMonth.toString());
-            // print("Current hour = "+_currentDate.toString());
-
-          }
-
+        }
       }
-
     });
-
-
-
-
-
   }
 
   singleNumberPicker(start, maxValue, bgColor, txtColor,
-      void Function(int value) changeTime, minValue,String value) {
+      void Function(int value) changeTime, minValue, String value) {
     return Container(
       decoration: BoxDecoration(
         boxShadow: kElevationToShadow[4],
@@ -683,14 +726,14 @@ class _AddVisitorState extends State<AddVisitor> {
       child: Stack(
         children: [
           Center(
-            child: Text(value,
+              child: Text(
+            value,
             style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: txtColor,
-                            ),
-            )
-          ),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: txtColor,
+            ),
+          )),
           Center(
             child: Divider(
               thickness: 2,
@@ -701,7 +744,6 @@ class _AddVisitorState extends State<AddVisitor> {
       ),
     );
   }
-
 
   singleStringPicker(
       int minNumber,
@@ -773,32 +815,42 @@ class _AddVisitorState extends State<AddVisitor> {
   }
 
   void selectOrCaptureImage(BuildContext context) {
-
     showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          title: Text("Select Image source"),
-          actions: [
-            TextButton(onPressed: (){imagePicker(ImageSource.camera);}, child: Text("Camera",style: TextStyle(color: CustomColors().customGreenColor),)),
-            TextButton(onPressed: (){imagePicker(ImageSource.gallery);}, child: Text("Gallery",style: TextStyle(color: CustomColors().customGreenColor),)),
-            // CustomButtonWidget(btntext: "Capture",btnonPressed: (){imagePicker(ImageSource.camera);},borderRadius: 10),
-            // CustomButtonWidget(btntext: "Gallery",btnonPressed: (){imagePicker(ImageSource.gallery);},borderRadius: 10),
-          ],
-        )
-    );
-
+              title: Text("Select Image source"),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      imagePicker(ImageSource.camera);
+                    },
+                    child: Text(
+                      "Camera",
+                      style: TextStyle(color: CustomColors().customGreenColor),
+                    )),
+                TextButton(
+                    onPressed: () {
+                      imagePicker(ImageSource.gallery);
+                    },
+                    child: Text(
+                      "Gallery",
+                      style: TextStyle(color: CustomColors().customGreenColor),
+                    )),
+                // CustomButtonWidget(btntext: "Capture",btnonPressed: (){imagePicker(ImageSource.camera);},borderRadius: 10),
+                // CustomButtonWidget(btntext: "Gallery",btnonPressed: (){imagePicker(ImageSource.gallery);},borderRadius: 10),
+              ],
+            ));
   }
 
-  imagePicker(ImageSource source)async{
+  imagePicker(ImageSource source) async {
     Navigator.pop(context);
-    final image = await ImagePicker().pickImage(source: source,imageQuality: 50);
-    if(image!=null){
+    final image =
+        await ImagePicker().pickImage(source: source, imageQuality: 50);
+    if (image != null) {
       final tempStorage = File(image.path);
       setState(() {
         this.visitorImage = tempStorage;
       });
     }
   }
-
-
 }

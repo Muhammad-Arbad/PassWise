@@ -28,6 +28,14 @@ class AddVisitorModel {
   }
 
   Map<String, dynamic> toJson() {
+
+    print(this.name);
+    print(this.phoneNo);
+    print(this.cnic);
+    print(this.reason);
+    print(this.qrcode);
+    print(this.date);
+    print(this.image);
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
     data['phone_no'] = this.phoneNo;
