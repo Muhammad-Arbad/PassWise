@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:passwise_app_rehan_sb/models/add_visitor_model.dart';
 import 'package:passwise_app_rehan_sb/models/sign_up_model.dart';
@@ -9,7 +8,7 @@ class HttpRequest {
   String baseUrl = "https://api.passwise.app/api/";
 
   Future<List> getAllPasses() async {
-    print("GET APPLICATION CALLED");
+    //print("GET APPLICATION CALLED");
     http.Response response = await http.get(
       Uri.parse(baseUrl + "passes"),
       headers: <String, String>{
@@ -20,12 +19,12 @@ class HttpRequest {
       },
     );
     if (response.statusCode == 200) {
-      print("Rsponse received");
-      print(jsonDecode(response.body));
+      //print("Rsponse received");
+      //print(jsonDecode(response.body));
       return (jsonDecode(response.body));
     } else {
-      print("Rsponse Not received");
-      print(response.statusCode);
+      //print("Rsponse Not received");
+      //print(response.statusCode);
       return [];
     }
   }
@@ -43,34 +42,25 @@ class HttpRequest {
       body: body,
     );
 
-    // print("invalidasjdn = "+response.statusCode.toString());
-    if (response.statusCode == 200) {
-      // print(response.statusCode);
-      // print(response.body);
 
-      // if (jsonDecode(response.body)["user"]["user_role"] == "Company") {
+    if (response.statusCode == 200) {
+
       if (jsonDecode(response.body)["user"]["user_role"] == "Host") {
         UserPreferences.setUserToken(jsonDecode(response.body)["token"]);
         String x = jsonDecode(response.body)["expiresIn"];
         // List<String> c = x.split(""); // ['a', 'a', 'a', 'b', 'c', 'd']
         // c.removeLast(); // ['a', 'a', 'a', 'b', 'c']
         // x = c.join();
-        // print(x);
+        // //print(x);
         //UserPreferences.setExpiryTime(int.parse(jsonDecode(response.body)["expiresIn"]));
         //UserPreferences.setExpiryTime(int.parse(x));
 
         // DateTime expiryTime = DateTime.now().add(Duration(seconds: 30));
-        DateTime expiryTime =
-            DateTime.now().add(Duration(seconds: int.parse(x)));
+        DateTime expiryTime = DateTime.now().add(Duration(seconds: int.parse(x)));
         UserPreferences.setExpiryTime(expiryTime.toString());
-        UserPreferences.setCompanyName(
-            jsonDecode(response.body)["user"]['office']);
+        UserPreferences.setCompanyName(jsonDecode(response.body)["user"]['office']);
 
-        // print("DateTime.now().second"+DateTime.now().toString());
-        // print("expiryTime.second"+expiryTime.toString());
 
-        //print("ExpiryTime = "+jsonDecode(response.body)["expiresIn"]);
-        //token = jsonDecode(response.body)["token"];
         return response.body;
       } else {
         return "null";
@@ -100,10 +90,10 @@ class HttpRequest {
         headers: headers);
 
     if (response.statusCode == 200) {
-      print(jsonDecode(response.body));
+      //print(jsonDecode(response.body));
       return "success";
     } else {
-      print(response.reasonPhrase);
+      //print(response.reasonPhrase);
       return jsonDecode(response.body)['message'];
     }
   }
@@ -126,12 +116,12 @@ class HttpRequest {
     // print("Response status code = "+response.statusCode.toString());
 
     if (response.statusCode == 200) {
-      print("IF PART OF ADD VISITOR");
+      //print("IF PART OF ADD VISITOR");
       // print(await response.stream.bytesToString());
       return "allowed";
     } else {
       // print(response.reasonPhrase);
-      print("ELSE PART OF ADD VISITOR");
+      //print("ELSE PART OF ADD VISITOR");
       return response.reasonPhrase;
     }
   }
@@ -149,12 +139,12 @@ class HttpRequest {
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
+      //print(await response.stream.bytesToString());
       // return response.stream.bytesToString();
       return "success";
     }
     else {
-      print(response.reasonPhrase);
+      //print(response.reasonPhrase);
       // return response.reasonPhrase??"";
       return "error";
     }
@@ -178,13 +168,64 @@ class HttpRequest {
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
-      print("if part of Image");
+      //print("if part of Image");
       // print(await response.stream.bytesToString());
       return await response.stream.bytesToString();
     } else {
-      print("else part of Image");
-      // print(response.reasonPhrase);
+      //print("else part of Image");
+      // //print(response.reasonPhrase);
       return "null";
     }
+  }
+
+
+  Future<String> getSinglePass(String id)async{
+    var headers = {
+      "Authorization": "Bearer " + UserPreferences.getUserToken()!
+    };
+
+    var request = http.Request('GET', Uri.parse(baseUrl + 'pass/'+id));
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      // //print(await response.stream.bytesToString());
+      return await response.stream.bytesToString();
+    }
+    else {
+    //print(response.reasonPhrase);
+    return "null";
+    }
+
+  }
+
+  Future<String> updateVisitor(AddVisitorModel addVisitorModel,String id)async{
+    var headers = {
+      "Authorization": "Bearer " + UserPreferences.getUserToken()!,
+      'Content-Type': 'application/json'
+    };
+    var request = http.Request('PUT', Uri.parse(baseUrl + 'update-pass/'+id));
+    request.body = json.encode({
+      "name": addVisitorModel.name,
+      "phone_no": addVisitorModel.phoneNo,
+      "reason": addVisitorModel.reason,
+      "cnic": addVisitorModel.cnic,
+      "image": addVisitorModel.image
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      // //print(await response.stream.bytesToString());
+      return "updated";
+    }
+    else {
+    // //print(response.reasonPhrase);
+    return "error";
+    }
+
   }
 }

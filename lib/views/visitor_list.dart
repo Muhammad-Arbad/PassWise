@@ -449,7 +449,7 @@ class _VisitorListState extends State<VisitorList> {
                                 onTap: (){
                                   print("Update");
                                   Navigator.push(
-                                      context, MaterialPageRoute(builder: (context) => AddVisitor()));
+                                      context, MaterialPageRoute(builder: (context) => AddVisitor(isEditing: true,id: visitorsDetail.sId,)));
                                 },
                                 child: Container(
                                   padding: EdgeInsets.all(3),

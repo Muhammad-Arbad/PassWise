@@ -41,6 +41,10 @@ dependencies:
   share_plus: ^6.3.0
   shared_preferences: ^2.0.15
   image_picker: ^0.8.6
+  permission_handler: ^10.2.0
+#  connectivity_plus: ^2.3.9
+  internet_connection_checker: ^1.0.0+1
+
 
 
 

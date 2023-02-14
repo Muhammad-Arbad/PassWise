@@ -47,6 +47,7 @@ class _SignInState extends State<SignIn> {
                 isEmail: true,
                 icoon: Icons.email,
                 controller: emailControllar,
+                isonAssetPath: "assets/email.png",
               ),
               TextFormFieldCustomerBuilt(
                 eyeIcon: InkWell(
@@ -54,13 +55,14 @@ class _SignInState extends State<SignIn> {
                       _togglePasswordView();
                     },
                     child: Icon(hidePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off,color: CustomColors().customGreenColor,)),
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,color: CustomColors().customGreenColor,)),
                 obscText: hidePassword,
                 showEyeIcon: true,
                 hintTxt: "Password",
                 icoon: Icons.key,
                 controller: passwordControllar,
+                isonAssetPath: "assets/key.png",
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

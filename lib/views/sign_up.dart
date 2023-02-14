@@ -51,6 +51,7 @@ class _SignUpState extends State<SignUp> {
                 hintTxt: "Name",
                 icoon: Icons.person,
                 controller: nameControllar,
+                isonAssetPath: "assets/person.png",
               ),
               TextFormFieldCustomerBuiltPhoneNumber(
                 isNumber: true,
@@ -58,17 +59,20 @@ class _SignUpState extends State<SignUp> {
                 hintTxt: "Phone no",
                 icoon: Icons.phone_android,
                 controller: phoneNoControllar,
+                isonAssetPath: "assets/phone.png",
               ),
               TextFormFieldCustomerBuilt(
                 hintTxt: "Office",
                 icoon: Icons.home_outlined,
                 controller: officeControllar,
+                isonAssetPath: "assets/office.png",
               ),
               TextFormFieldCustomerBuilt(
                 textInputType: TextInputType.number,
                 hintTxt: "Security Code",
                 icoon: Icons.format_list_numbered,
                 controller: securityCodeControllar,
+                isonAssetPath: "assets/code.png",
               ),
               TextFormFieldCustomerBuilt(
                 isEmail: true,
@@ -76,6 +80,7 @@ class _SignUpState extends State<SignUp> {
                 hintTxt: "Email",
                 icoon: Icons.email_outlined,
                 controller: emailControllar,
+                isonAssetPath: "assets/email.png",
               ),
               TextFormFieldCustomerBuilt(
                 eyeIcon: InkWell(
@@ -83,11 +88,12 @@ class _SignUpState extends State<SignUp> {
                       _togglePasswordView();
                     },
                     child: Icon(hidePassword
-                        ? Icons.visibility
-                        : Icons.visibility_off,color: CustomColors().customGreenColor,)),
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,color: CustomColors().customGreenColor,)),
                 obscText: hidePassword,
                 showEyeIcon: true,
                 hintTxt: "Password",
+                isonAssetPath: "assets/key.png",
                 icoon: Icons.key_outlined,
                 controller: passwordControllar,
               ),

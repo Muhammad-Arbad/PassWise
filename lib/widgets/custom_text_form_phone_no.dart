@@ -18,11 +18,12 @@ class TextFormFieldCustomerBuiltPhoneNumber extends StatefulWidget {
         this.showSeparator,
         this.eyeIcon,
         this.showEyeIcon,
-        this.isEmail
+        this.isEmail,
+        this.isonAssetPath
       });
 
   TextEditingController? controller;
-  String? hintTxt, suffitext;
+  String? hintTxt, suffitext,isonAssetPath;
   IconData? icoon;
   bool? obscText = false;
   VoidCallback? ontap;
@@ -123,8 +124,17 @@ class _TextFormFieldCustomerBuiltPhoneNumberState
                     right:
                     BorderSide(color: CustomColors().customGreenColor)),
               ),
-              child: Icon(widget.icoon,
-                  color: CustomColors().customGreenColor))
+              child:
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ImageIcon(
+                  AssetImage(widget.isonAssetPath??"assets/add.png"),
+                  color: CustomColors().customGreenColor,
+                ),
+              ),
+              // Icon(widget.icoon,
+              //     color: CustomColors().customGreenColor),
+          )
               : null,
           //suffixText: widget.suffitext,
         ),
